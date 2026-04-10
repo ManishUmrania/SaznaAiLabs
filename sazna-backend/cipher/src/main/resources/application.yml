@@ -1,0 +1,14 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: cipher-service
+
+jwt:
+  secret: mySecretKey
+  expiration: 86400000 # 24 hours
+
+logging:
+  level:
+    com.sazna: DEBUG

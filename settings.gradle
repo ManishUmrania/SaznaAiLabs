@@ -1,0 +1,11 @@
+rootProject.name = 'sazna-platform'
+
+// Define the modules with simple names
+include 'cipher'
+include 'identity'
+include 'shared'
+
+// Tell Gradle exactly where these folders are located
+project(':cipher').projectDir = file('sazna-backend/cipher')
+project(':identity').projectDir = file('sazna-backend/identity')
+project(':shared').projectDir = file('sazna-backend/Shared')
