@@ -113,6 +113,18 @@ The Identity service manages user profiles, registration, and synchronization wi
 - **Gradle** - Build automation tool
 - **Lombok** - Boilerplate code reduction
 
+## Documentation
+
+Comprehensive documentation is available in the `docs/` directory:
+
+- **[Architecture Documentation](docs/architecture.md)** - Detailed system architecture and design decisions
+- **[Local Development Guide](docs/local-development.md)** - Setting up development environment, containerization, and automation
+- **[API Guide](docs/api-guide.md)** - Complete API endpoint documentation and usage examples
+- **[Deployment and Scaling Guide](docs/deployment-scaling.md)** - Production deployment strategies and scaling approaches
+- **[Testing and QA Guide](docs/testing-qa.md)** - Testing strategies, quality assurance practices, and automation
+
+See [Documentation Summary](docs/SUMMARY.md) for a complete overview of all available documentation.
+
 ## Getting Started
 
 ### Prerequisites
