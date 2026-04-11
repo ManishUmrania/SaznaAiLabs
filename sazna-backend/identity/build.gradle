@@ -1,19 +1,28 @@
-// Add JPA and DB runtime dependencies for the identity module
-// The root/subprojects build.gradle already applies the Spring Boot and dependency-management plugins,
-// so we only need to declare module-specific dependencies here.
+// backend/identity/build.gradle
+
+
+plugins {
+    id 'org.springframework.boot'
+}
+
+bootJar {
+    mainClass = 'com.sazna.identity.IdentityApplication'
+}
 
 dependencies {
     implementation project(':shared')
 
-    // JPA and JDBC
+    // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    // Runtime DB drivers: H2 for tests/dev, Postgres as a common production DB
+    // Databases
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'
 
-    // Include H2 for tests (fast in-memory DB)
     testImplementation 'com.h2database:h2'
 }

@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/sazna_db
     username: postgres
-    password: postgres
+    password: admin
     driver-class-name: org.postgresql.Driver
 
   jpa:

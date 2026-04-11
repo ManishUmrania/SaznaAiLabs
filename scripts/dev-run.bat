@@ -12,35 +12,61 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
-REM Start PostgreSQL in the background
-echo Starting PostgreSQL database...
-docker run -d ^
-  --name sazna-postgres ^
-  -e POSTGRES_DB=sazna_db ^
-  -e POSTGRES_USER=postgres ^
-  -e POSTGRES_PASSWORD=postgres ^
-  -p 5432:5432 ^
-  -v postgres_data:/var/lib/postgresql/data ^
-  postgres:15-alpine
+REM Configure expected local Postgres connection (change these if your local DB uses different credentials/port)
+set "PG_HOST=localhost"
+set "PG_PORT=5432"
+set "PG_DB=sazna_db"
+set "PG_USER=postgres"
+set "PG_PASSWORD=admin"
 
-REM Wait for PostgreSQL to be ready
-echo Waiting for PostgreSQL to be ready...
-timeout /t 10 /nobreak >nul
+echo Checking for local PostgreSQL at %PG_HOST%:%PG_PORT%...
+powershell -Command "try { $c = New-Object Net.Sockets.TcpClient; $c.Connect('%PG_HOST%', %PG_PORT%); $c.Close(); exit 0 } catch { exit 1 }"
+if %ERRORLEVEL% EQU 0 (
+    echo Found a listening process on %PG_HOST%:%PG_PORT%; assuming local PostgreSQL.
+    echo Please ensure database %PG_DB% and user %PG_USER% exist and are accessible.
+) else (
+    echo No local PostgreSQL detected on %PG_HOST%:%PG_PORT%.
+    where docker >nul 2>&1
+    if %ERRORLEVEL% NEQ 0 (
+        echo Docker is not installed and no local PostgreSQL detected.
+        echo Please install Docker Desktop or start PostgreSQL locally and re-run this script.
+        exit /b 1
+    )
+    echo Starting PostgreSQL database in Docker...
+    docker run -d ^
+      --name sazna-postgres ^
+      -e POSTGRES_DB=%PG_DB% ^
+      -e POSTGRES_USER=%PG_USER% ^
+      -e POSTGRES_PASSWORD=%PG_PASSWORD% ^
+      -p 5432:5432 ^
+      -v postgres_data:/var/lib/postgresql/data ^
+      postgres:15-alpine
 
-echo PostgreSQL is ready!
+    echo Waiting for PostgreSQL to be ready in Docker...
+    timeout /t 10 /nobreak >nul
+)
 
-REM Start Identity Service
-echo Starting Identity Service...
-start "Identity Service" cmd /c "gradlew.bat :sazna-backend:identity:bootRun"
+REM Compose JDBC URL for downstream messages
+set "JDBC_URL=jdbc:postgresql://%PG_HOST%:%PG_PORT%/%PG_DB%"
 
-REM Start Cipher Service
-echo Starting Cipher Service...
-start "Cipher Service" cmd /c "gradlew.bat :sazna-backend:cipher:bootRun"
+echo PostgreSQL is ready (or will be shortly)!
+
+@echo off
+
+REM Move to project root
+cd /d %~dp0..
+
+echo Starting services in Windows Terminal tabs...
+
+wt ^
+new-tab cmd /k "cd /d C:\work\sazna-platform && gradlew.bat :identity:bootRun" ^
+; new-tab cmd /k "cd /d C:\work\sazna-platform && gradlew.bat :cipher:bootRun"
+
 
 echo All services started!
 echo Identity Service: http://localhost:8080
 echo Cipher Service: http://localhost:8081
-echo PostgreSQL: jdbc:postgresql://localhost:5432/sazna_db
+echo PostgreSQL: %JDBC_URL%
 
 echo Press any key to stop all services
 pause >nul
