@@ -62,7 +62,6 @@ wt ^
 new-tab cmd /k "cd /d C:\work\sazna-platform && gradlew.bat :identity:bootRun" ^
 ; new-tab cmd /k "cd /d C:\work\sazna-platform && gradlew.bat :cipher:bootRun"
 
-
 echo All services started!
 echo Identity Service: http://localhost:8080
 echo Cipher Service: http://localhost:8081

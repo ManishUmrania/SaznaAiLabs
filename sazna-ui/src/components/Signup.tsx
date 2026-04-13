@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import './Signup.css';
 
 const Signup: React.FC = () => {
@@ -11,6 +12,7 @@ const Signup: React.FC = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,7 +22,7 @@ const Signup: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -44,13 +46,28 @@ const Signup: React.FC = () => {
       return;
     }
 
-    // Simulate API call
-    setTimeout(() => {
-      // For demo purposes, we'll just simulate a successful signup
-      localStorage.setItem('isAuthenticated', 'true');
-      setLoading(false);
+    try {
+      // Split name into first and last name
+      const nameParts = formData.name.trim().split(' ');
+      const firstName = nameParts[0];
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      // Call the registration API
+      await register({
+        email: formData.email,
+        password: formData.password,
+        firstName: firstName,
+        lastName: lastName
+      });
+
+      // After successful registration, navigate to the dashboard
       navigate('/dashboard');
-    }, 1000);
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred during registration';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

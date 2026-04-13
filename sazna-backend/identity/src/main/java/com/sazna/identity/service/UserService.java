@@ -99,9 +99,42 @@ public class UserService {
 
     public ValidateUserResponse validateUser(ValidateUserRequest request) {
 
-        return userRepository.findByEmail(request.getEmail())
-                .map(user -> validatePassword(user, request.getPassword()))
-                .orElse(new ValidateUserResponse(false, null, null));
+        System.out.println("➡️ validateUser called");
+        System.out.println("EMAIL: " + request.getEmail());
+        System.out.println("PASSWORD: " + request.getPassword());
+
+        if (request.getEmail() == null || request.getPassword() == null) {
+            System.out.println("❌ NULL INPUT DETECTED");
+            return new ValidateUserResponse(false, null, null);
+        }
+
+        String email = request.getEmail().trim().toLowerCase();
+        var optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isEmpty()) {
+            System.out.println("❌ USER NOT FOUND for email: " + request.getEmail());
+            return new ValidateUserResponse(false, null, null);
+        }
+
+        var user = optionalUser.get();
+
+        System.out.println("✅ USER FOUND: " + user.getId());
+
+        boolean matches = passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword()
+        );
+
+        System.out.println("PASSWORD MATCH: " + matches);
+
+        if (!matches) {
+            System.out.println("❌ PASSWORD INCORRECT");
+            return new ValidateUserResponse(false, null, null);
+        }
+
+        System.out.println("✅ LOGIN SUCCESS");
+
+        return new ValidateUserResponse(true, user.getId(), user.getEmail());
     }
 
     private ValidateUserResponse validatePassword(User user, String rawPassword) {

@@ -1,4 +1,4 @@
-package com.sazna.cipher.security;
+package com.sazna.identity.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

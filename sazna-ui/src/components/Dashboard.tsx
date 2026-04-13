@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const { user, isAuthenticated } = useAuth();
 
-  // Check if user is authenticated
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-
+  // Redirect to login if not authenticated
   if (!isAuthenticated) {
     navigate('/login');
     return null;
@@ -41,7 +41,7 @@ const Dashboard: React.FC = () => {
       {/* Welcome Section */}
       <div className="welcome-section">
         <h1 className="welcome-title">
-          Good morning, Alex!
+          Good morning, {user?.firstName || 'User'}!
         </h1>
         <p className="welcome-subtitle">
           Here's what's happening with your projects today.

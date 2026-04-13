@@ -1,14 +1,20 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import './Header.css';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const { isAuthenticated, logout } = useAuth();
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      navigate('/');
+    }
   };
 
   return (

@@ -33,12 +33,21 @@ public class AuthService {
                     restTemplate.postForEntity(identityServiceUrl, loginRequest, Map.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && (Boolean) response.getBody().get("valid")) {
-                String token = jwtTokenProvider.generateToken(loginRequest.getEmail());
+                // ✅ Extract userId from response
+                Number userIdNumber = (Number) response.getBody().get("userId");
+                Long userId = userIdNumber.longValue();
+
+                // ✅ Extract email (or username)
+                String email = (String) response.getBody().get("email");
+
+                // ✅ Generate token with BOTH values
+                String token = jwtTokenProvider.generateToken(userId, email);
 
                 return new LoginResponse(true, "Login successful", token);
             }
             return new LoginResponse(false, "Invalid credentials", null);
         } catch (RestClientException e) {
+             e.printStackTrace();
             return new LoginResponse(false, "Error connecting to identity service", null);
         }
     }

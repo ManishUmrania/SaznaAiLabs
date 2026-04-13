@@ -6,6 +6,8 @@ import com.sazna.identity.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,19 +27,26 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> getMyProfile(@RequestAttribute("userId") Long userId) {
+    public ResponseEntity<UserResponseDTO> getMyProfile(Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+
         return ResponseEntity.ok(userService.getProfile(userId));
     }
 
     @PatchMapping("/me")
     public ResponseEntity<UserResponseDTO> updateMyProfile(
-            @RequestAttribute("userId") Long userId,
-            @RequestBody UserUpdateDTO dto) {
+            Authentication authentication,
+            @RequestBody UserUpdateDTO dto
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
         return ResponseEntity.ok(userService.updateProfile(userId, dto));
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<Void> deleteMyAccount(@RequestAttribute("userId") Long userId) {
+    public ResponseEntity<Void> deleteMyAccount(
+            Authentication authentication
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
         userService.deactivateUser(userId);
         return ResponseEntity.noContent().build();
     }

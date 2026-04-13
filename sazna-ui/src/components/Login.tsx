@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import './Login.css';
 
 const Login: React.FC = () => {
@@ -7,9 +8,10 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -21,13 +23,16 @@ const Login: React.FC = () => {
       return;
     }
 
-    // Simulate API call
-    setTimeout(() => {
-      // For demo purposes, we'll just simulate a successful login
-      localStorage.setItem('isAuthenticated', 'true');
-      setLoading(false);
+    try {
+      await login(email, password);
+      // Navigate to dashboard
       navigate('/dashboard');
-    }, 1000);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred during login';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
