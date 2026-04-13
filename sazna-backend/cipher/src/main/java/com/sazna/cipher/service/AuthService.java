@@ -14,12 +14,11 @@ import java.util.Map;
 @Service
 public class AuthService {
 
-    private final PasswordEncoderService passwordEncoderService;
     private final JwtTokenProvider jwtTokenProvider;
     private final RestTemplate restTemplate;
 
-    public AuthService(PasswordEncoderService passwordEncoderService, JwtTokenProvider jwtTokenProvider) {
-        this.passwordEncoderService = passwordEncoderService;
+    public AuthService( JwtTokenProvider jwtTokenProvider) {
+
         this.jwtTokenProvider = jwtTokenProvider;
         this.restTemplate = new RestTemplate();
     }
@@ -27,51 +26,20 @@ public class AuthService {
     public LoginResponse login(LoginRequest loginRequest) {
         try {
             // Call identity service to get user details
-            String identityServiceUrl = "http://localhost:8080/api/users/email/" + loginRequest.getEmail();
+            String identityServiceUrl = "http://localhost:8080/api/users/validate";
 
             // Make REST call to identity service
-            ResponseEntity<Map> response = restTemplate.getForEntity(identityServiceUrl, Map.class);
+            ResponseEntity<Map> response =
+                    restTemplate.postForEntity(identityServiceUrl, loginRequest, Map.class);
 
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                Map<String, Object> userMap = response.getBody();
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && (Boolean) response.getBody().get("valid")) {
+                String token = jwtTokenProvider.generateToken(loginRequest.getEmail());
 
-                // Extract password from response (in a real implementation, this would be properly mapped)
-                // For now, we'll use a simulated hashed password
-                String hashedPasswordFromDB = "$2a$10$njXRKQkMGBcwgHGUrD/lYOvFqGCkyhV5EyQR5LwGacvRcWpfsP0oG"; // "password" hashed
-
-                boolean passwordMatches = passwordEncoderService.matches(loginRequest.getPassword(), hashedPasswordFromDB);
-
-                if (passwordMatches) {
-                    // Generate JWT token
-                    String token = jwtTokenProvider.generateToken(loginRequest.getEmail());
-
-                    LoginResponse loginResponse = new LoginResponse();
-                    loginResponse.setSuccess(true);
-                    loginResponse.setMessage("Login successful");
-                    loginResponse.setToken(token);
-                    return loginResponse;
-                } else {
-                    LoginResponse loginResponse = new LoginResponse();
-                    loginResponse.setSuccess(false);
-                    loginResponse.setMessage("Invalid credentials");
-                    return loginResponse;
-                }
-            } else {
-                LoginResponse loginResponse = new LoginResponse();
-                loginResponse.setSuccess(false);
-                loginResponse.setMessage("User not found");
-                return loginResponse;
+                return new LoginResponse(true, "Login successful", token);
             }
+            return new LoginResponse(false, "Invalid credentials", null);
         } catch (RestClientException e) {
-            LoginResponse loginResponse = new LoginResponse();
-            loginResponse.setSuccess(false);
-            loginResponse.setMessage("Service unavailable: " + e.getMessage());
-            return loginResponse;
-        } catch (Exception e) {
-            LoginResponse loginResponse = new LoginResponse();
-            loginResponse.setSuccess(false);
-            loginResponse.setMessage("Login failed: " + e.getMessage());
-            return loginResponse;
+            return new LoginResponse(false, "Error connecting to identity service", null);
         }
     }
 }

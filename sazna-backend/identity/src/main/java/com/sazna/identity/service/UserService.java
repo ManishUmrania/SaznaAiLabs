@@ -96,4 +96,22 @@ public class UserService {
 
         return mapToDTO(userRepository.save(user));
     }
+
+    public ValidateUserResponse validateUser(ValidateUserRequest request) {
+
+        return userRepository.findByEmail(request.getEmail())
+                .map(user -> validatePassword(user, request.getPassword()))
+                .orElse(new ValidateUserResponse(false, null, null));
+    }
+
+    private ValidateUserResponse validatePassword(User user, String rawPassword) {
+
+        boolean matches = passwordEncoder.matches(rawPassword, user.getPassword());
+
+        if (matches) {
+            return new ValidateUserResponse(true, user.getId(), user.getEmail());
+        }
+
+        return new ValidateUserResponse(false, null, null);
+    }
 }

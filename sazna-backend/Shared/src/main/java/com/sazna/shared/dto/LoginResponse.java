@@ -5,6 +5,12 @@ public class LoginResponse {
     private String message;
     private String token;
 
+    public LoginResponse(boolean b, String loginSuccessful, String token) {
+        	this.success = b;
+        	this.message = loginSuccessful;
+        	this.token = token;
+    }
+
     public boolean isSuccess() {
         return success;
     }

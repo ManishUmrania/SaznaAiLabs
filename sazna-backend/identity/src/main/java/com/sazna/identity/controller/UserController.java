@@ -57,6 +57,16 @@ public class UserController {
         }
     }
 
+    @PostMapping("/validate")
+    public ResponseEntity<ValidateUserResponse> validateUser(
+            @RequestBody ValidateUserRequest request) {
+
+        ValidateUserResponse response = userService.validateUser(request);
+        return ResponseEntity.ok(response);
+    }
+
+
+
     // Helper method to convert Entity to DTO
     private UserResponseDTO mapToDTO(User user) {
         UserResponseDTO dto = new UserResponseDTO();
