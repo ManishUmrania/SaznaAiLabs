@@ -75,12 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const register = async (userData: { email: string; password: string; firstName: string; lastName?: string }) => {
-    try {
-      const response = await userApi.register(userData);
-      setUser(response);
-    } catch (error) {
-      throw error;
-    }
+    const response = await userApi.register(userData);
+    setUser(response);
   };
 
   const value = {

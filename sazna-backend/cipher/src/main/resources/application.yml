@@ -20,9 +20,16 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
-  secret: this_is_a_very_long_secret_key_at_least_64_characters_long_for_hs512_algorithm_usage
+  private-key-path: src/main/resources/keys/private.pem
+  public-key-path: src/main/resources/keys/public.pem
   expiration: 86400000
+
 
 logging:
   level:
     com.sazna: DEBUG
+
+app:
+  cors:
+    allowed-origins:
+      - http://localhost:5177

@@ -1,0 +1,3 @@
+com.sazna.security.config.SecurityConfig
+com.sazna.security.config.SecurityBeansConfig
+com.sazna.security.config.CorsConfig
