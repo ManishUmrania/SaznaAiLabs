@@ -2,33 +2,40 @@ package com.sazna.cipher.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret:this_is_a_very_long_secret_key_at_least_64_characters_long_for_hs512_algorithm_usage}")
-    private String jwtSecret;
+    private PrivateKey privateKey;
+    private PublicKey publicKey;
 
     @Value("${jwt.expiration:86400000}")
     private int jwtExpiration;
 
+    @PostConstruct
+    public void init() throws Exception {
+        privateKey = KeyUtil.loadPrivateKey("src/main/resources/keys/private.pem");
+        publicKey = KeyUtil.loadPublicKey("src/main/resources/keys/public.pem");
+    }
+
     public String generateToken(Long userId, String username) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpiration);
-
-        Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
         return Jwts.builder()
                 .setSubject(username)
                 .claim("userId", userId)
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
-                .signWith(key, SignatureAlgorithm.HS512)
+                .signWith(privateKey, SignatureAlgorithm.RS256)
                 .compact();
     }
 
@@ -38,9 +45,8 @@ public class JwtTokenProvider {
     }
 
     private Claims getClaims(String token) {
-        Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(publicKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -53,8 +59,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             // Handle invalid token exceptions

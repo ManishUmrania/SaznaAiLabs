@@ -33,14 +33,14 @@ public class AuthService {
                     restTemplate.postForEntity(identityServiceUrl, loginRequest, Map.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && (Boolean) response.getBody().get("valid")) {
-                // ✅ Extract userId from response
+                // Extract userId from response
                 Number userIdNumber = (Number) response.getBody().get("userId");
                 Long userId = userIdNumber.longValue();
 
-                // ✅ Extract email (or username)
+                // Extract email (or username)
                 String email = (String) response.getBody().get("email");
 
-                // ✅ Generate token with BOTH values
+                // Generate token with BOTH values
                 String token = jwtTokenProvider.generateToken(userId, email);
 
                 return new LoginResponse(true, "Login successful", token);

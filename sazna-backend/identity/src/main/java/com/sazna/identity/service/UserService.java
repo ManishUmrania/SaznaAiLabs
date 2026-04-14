@@ -99,12 +99,13 @@ public class UserService {
 
     public ValidateUserResponse validateUser(ValidateUserRequest request) {
 
-        System.out.println("➡️ validateUser called");
+
+        System.out.println("validateUser called");
         System.out.println("EMAIL: " + request.getEmail());
         System.out.println("PASSWORD: " + request.getPassword());
 
         if (request.getEmail() == null || request.getPassword() == null) {
-            System.out.println("❌ NULL INPUT DETECTED");
+            System.out.println("NULL INPUT DETECTED");
             return new ValidateUserResponse(false, null, null);
         }
 
@@ -112,13 +113,13 @@ public class UserService {
         var optionalUser = userRepository.findByEmail(email);
 
         if (optionalUser.isEmpty()) {
-            System.out.println("❌ USER NOT FOUND for email: " + request.getEmail());
+            System.out.println("USER NOT FOUND for email: " + request.getEmail());
             return new ValidateUserResponse(false, null, null);
         }
 
         var user = optionalUser.get();
 
-        System.out.println("✅ USER FOUND: " + user.getId());
+        System.out.println("USER FOUND: " + user.getId());
 
         boolean matches = passwordEncoder.matches(
                 request.getPassword(),
@@ -128,11 +129,11 @@ public class UserService {
         System.out.println("PASSWORD MATCH: " + matches);
 
         if (!matches) {
-            System.out.println("❌ PASSWORD INCORRECT");
+            System.out.println("PASSWORD INCORRECT");
             return new ValidateUserResponse(false, null, null);
         }
 
-        System.out.println("✅ LOGIN SUCCESS");
+        System.out.println("LOGIN SUCCESS");
 
         return new ValidateUserResponse(true, user.getId(), user.getEmail());
     }
