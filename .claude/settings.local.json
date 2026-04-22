@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew :gateway:compileJava *)",
+      "Bash(./gradlew clean *)"
+    ]
+  }
+}

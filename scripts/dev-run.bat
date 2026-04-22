@@ -60,11 +60,13 @@ echo Starting services in Windows Terminal tabs...
 
 wt ^
 new-tab cmd /k "cd /d C:\work\sazna-platform && gradlew.bat :identity:bootRun" ^
-; new-tab cmd /k "cd /d C:\work\sazna-platform && gradlew.bat :cipher:bootRun"
+; new-tab cmd /k "cd /d C:\work\sazna-platform && gradlew.bat :cipher:bootRun"  ^
+; new-tab cmd /k "cd /d C:\work\sazna-platform && gradlew.bat :gateway:bootRun"
 
 echo All services started!
 echo Identity Service: http://localhost:8080
 echo Cipher Service: http://localhost:8081
+echo Gateway Service: http://localhost:8085
 echo PostgreSQL: %JDBC_URL%
 
 echo Press any key to stop all services
