@@ -1,7 +1,9 @@
 package com.sazna.security.util;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import org.springframework.core.io.Resource;
+
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -11,8 +13,13 @@ import java.util.Base64;
 
 public class KeyUtil {
 
-    public static PrivateKey loadPrivateKey(String path) throws Exception {
-        String key = new String(Files.readAllBytes(Paths.get(path)));
+    public static PrivateKey loadPrivateKey(Resource privateKeyResource) throws Exception {
+
+        String key;
+        try (InputStream is = privateKeyResource.getInputStream()) {
+            key = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        }
+
         key = key.replace("-----BEGIN PRIVATE KEY-----", "")
                 .replace("-----END PRIVATE KEY-----", "")
                 .replaceAll("\\s", "");
@@ -23,8 +30,13 @@ public class KeyUtil {
         return KeyFactory.getInstance("RSA").generatePrivate(spec);
     }
 
-    public static PublicKey loadPublicKey(String path) throws Exception {
-        String key = new String(Files.readAllBytes(Paths.get(path)));
+    public static PublicKey loadPublicKey(Resource publicKeyResource) throws Exception {
+
+        String key;
+        try (InputStream is = publicKeyResource.getInputStream()) {
+            key = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        }
+
         key = key.replace("-----BEGIN PUBLIC KEY-----", "")
                 .replace("-----END PUBLIC KEY-----", "")
                 .replaceAll("\\s", "");

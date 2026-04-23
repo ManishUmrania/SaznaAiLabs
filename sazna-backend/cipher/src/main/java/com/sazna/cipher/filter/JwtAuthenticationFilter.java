@@ -1,4 +1,4 @@
-package com.sazna.security.filter;
+package com.sazna.cipher.filter;
 
 import com.sazna.security.jwt.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
@@ -15,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 

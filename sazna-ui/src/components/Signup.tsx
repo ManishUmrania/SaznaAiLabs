@@ -61,7 +61,8 @@ const Signup: React.FC = () => {
       });
 
       // After successful registration, navigate to the dashboard
-      navigate('/dashboard');
+      
+      navigate('/login');
     } catch (err: Error | unknown) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred during registration';
       setError(errorMessage);

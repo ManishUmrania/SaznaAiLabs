@@ -1,6 +1,6 @@
 package com.sazna.identity.config;
 
-import com.sazna.security.filter.JwtAuthenticationFilter;
+import com.sazna.identity.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;

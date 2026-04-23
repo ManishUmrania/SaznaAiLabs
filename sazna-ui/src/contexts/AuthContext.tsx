@@ -74,10 +74,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (userData: { email: string; password: string; firstName: string; lastName?: string }) => {
-    const response = await userApi.register(userData);
-    setUser(response);
-  };
+  const register = async (userData:{ email: string; password: string; firstName: string; lastName?: string }) => {
+  const response = await userApi.register(userData);
+
+  //  STEP 1: extract token properly
+  const token = response?.accessToken || response?.token;
+
+  if (token) {
+    tokenService.setToken(token);
+  } else {
+    throw new Error("No token received from signup API");
+  }
+
+  //  STEP 2: fetch real user (DON'T trust signup response)
+  const userDataFromServer = await userApi.getCurrentUser();
+  setUser(userDataFromServer);
+};
 
   const value = {
     user,

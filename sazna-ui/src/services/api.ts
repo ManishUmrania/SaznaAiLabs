@@ -1,6 +1,6 @@
 // Base API configurations
-const AUTH_API_BASE_URL = 'http://localhost:8081'; // Auth service URL
-const USER_API_BASE_URL = 'http://localhost:8080'; // User service URL
+const AUTH_API_BASE_URL = 'http://localhost:8085'; // Auth service URL
+const USER_API_BASE_URL = 'http://localhost:8085'; // User service URL
 
 // Helper function to get headers with authorization token
 const getAuthHeaders = () => {

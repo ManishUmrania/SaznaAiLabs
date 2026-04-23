@@ -3,12 +3,6 @@ plugins {
 }
 
 dependencies {
-
-    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
-
     // Spring Security
-    api 'org.springframework.boot:spring-boot-starter-security'
-
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.security:spring-security-core'
 }

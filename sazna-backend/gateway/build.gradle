@@ -14,7 +14,8 @@ dependencies {
 
     // Spring Cloud Gateway
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
     // Spring Security for WebFlux
     implementation 'org.springframework.boot:spring-boot-starter-security'

@@ -1,6 +1,6 @@
 package com.sazna.cipher.config;
 
-import com.sazna.security.filter.JwtAuthenticationFilter;
+import com.sazna.cipher.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -15,7 +15,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Bean
-    @Order(1)
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
         http
                 .securityMatcher("/api/auth/**")

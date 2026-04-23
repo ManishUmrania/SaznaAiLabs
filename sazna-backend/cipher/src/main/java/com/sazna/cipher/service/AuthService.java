@@ -1,8 +1,7 @@
 package com.sazna.cipher.service;
 
 import com.sazna.security.jwt.JwtTokenProvider;
-import com.sazna.shared.dto.LoginRequest;
-import com.sazna.shared.dto.LoginResponse;
+import com.sazna.shared.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,6 @@ import java.util.Map;
 @Service
 public class AuthService {
 
-    @Autowired
     private final JwtTokenProvider jwtTokenProvider;
     private final RestTemplate restTemplate;
 

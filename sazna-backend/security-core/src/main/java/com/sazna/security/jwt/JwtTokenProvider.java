@@ -2,36 +2,30 @@ package com.sazna.security.jwt;
 
 import com.sazna.security.util.KeyUtil;
 import io.jsonwebtoken.*;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Date;
 
-
 public class JwtTokenProvider {
 
-    @Value("${jwt.public-key-path}")
-    private  String publicKeyPath;
+    private final PrivateKey privateKey;
+    private final PublicKey publicKey;
+    private final int jwtExpiration;
 
-    @Value("${jwt.private-key-path:}")
-    private  String privateKeyPath;
+    public JwtTokenProvider(Resource publicKeyResource,
+                            Resource privateKeyResource,
+                            int jwtExpiration) throws Exception {
 
-    private PrivateKey privateKey;
-    private PublicKey publicKey;
-
-    @Value("${jwt.expiration:86400000}")
-    private  int jwtExpiration;
-
-    @SuppressWarnings("unused")
-    @PostConstruct
-    public void init() throws Exception {
-        if (!(privateKeyPath == null || privateKeyPath.isBlank())) {
-            privateKey = KeyUtil.loadPrivateKey(privateKeyPath);
+        if (privateKeyResource != null) {
+            this.privateKey = KeyUtil.loadPrivateKey(privateKeyResource);
+        } else {
+            this.privateKey = null;
         }
-        publicKey = KeyUtil.loadPublicKey(publicKeyPath);
+
+        this.publicKey = KeyUtil.loadPublicKey(publicKeyResource);
+        this.jwtExpiration = jwtExpiration;
     }
 
     public String generateToken(Long userId, String username) {
@@ -39,17 +33,16 @@ public class JwtTokenProvider {
         Date expiryDate = new Date(now.getTime() + jwtExpiration);
 
         return Jwts.builder()
-                .subject(username)                 // setSubject -> subject
-                .claim("userId", userId)           // (remains the same)
-                .issuedAt(new Date())              // setIssuedAt -> issuedAt
-                .expiration(expiryDate)            // setExpiration -> expiration
-                .signWith(privateKey)              // JJWT 0.12+ detects RS256 from your RSA PrivateKey
+                .subject(username)
+                .claim("userId", userId)
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(privateKey)
                 .compact();
     }
 
     public String getUsernameFromToken(String token) {
-        Claims claims = getClaims(token);
-        return claims.getSubject();
+        return getClaims(token).getSubject();
     }
 
     private Claims getClaims(String token) {
@@ -61,18 +54,18 @@ public class JwtTokenProvider {
     }
 
     public Long getUserIdFromToken(String token) {
-        Claims claims = getClaims(token);
-        return claims.get("userId", Long.class);
+        return getClaims(token).get("userId", Long.class);
     }
 
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                    .verifyWith(publicKey).build().parseSignedClaims(token);
+                    .verifyWith(publicKey)
+                    .build()
+                    .parseSignedClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            // Handle invalid token exceptions
+            return false;
         }
-        return false;
     }
 }

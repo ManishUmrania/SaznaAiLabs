@@ -1,4 +1,4 @@
-package com.sazna.identity.dto;
+package com.sazna.shared.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

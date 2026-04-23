@@ -1,8 +1,8 @@
 package com.sazna.identity.service;
 
-import com.sazna.identity.dto.*;
 import com.sazna.identity.entity.User;
 import com.sazna.identity.repository.UserRepository;
+import com.sazna.shared.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;

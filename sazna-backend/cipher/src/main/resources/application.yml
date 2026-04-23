@@ -20,8 +20,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
-  private-key-path: src/main/resources/keys/private.pem
-  public-key-path: src/main/resources/keys/public.pem
+  private-key-path: classpath:keys/private.pem
+  public-key-path: classpath:keys/public.pem
   expiration: 86400000
 
 
